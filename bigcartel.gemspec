@@ -12,8 +12,10 @@ Gem::Specification.new do |s|
   s.summary     = %q{Ruby wrapper for the Big Cartel API}
   s.description = %q{A Ruby wrapper for the Big Cartel External REST API}
 
+  s.add_runtime_dependency('crack', '~> 0.1.8')
+  s.add_runtime_dependency('httparty', '~> 0.7.3')
 
-  s.rubyforge_project = "bigcartel"
+  s.rubyforge_project = s.name
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
