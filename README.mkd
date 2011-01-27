@@ -6,6 +6,16 @@ Installation
 ------------
     gem install bigcartel
     
+Usage
+------
+    require 'rubygems'
+    require 'bigcartel'
+    require 'pp'
+
+    s = BigCartel::Base.new("tonkapark")
+    pp s.store
+
+    
 Copyright
 ---------
 Copyright (c) 2011 Matt Anderson
