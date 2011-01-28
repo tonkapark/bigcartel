@@ -12,9 +12,16 @@ Usage
     require 'bigcartel'
     require 'pp'
 
-    s = BigCartel::Base.new("tonkapark")
-    pp s.store
-
+    s = BigCartel.store("tonkapark") 
+    
+    pp s.description
+    
+    s.products.each do |product|
+     pp product.name
+     pp product.img.thumb
+    end
+    
+    
     
 Copyright
 ---------
