@@ -37,12 +37,12 @@ module BigCartel
       @description = data['description']
       @website = data['website']
       @products_count = data['products_count']
-      @pages = data['pages'].map{|p| Page.new(p, data['url'])}  unless data['pages'].blank?
+      @pages = data['pages'].map{|p| Page.new(data['url'], p)}  unless data['pages'].blank?
       @name = data['name']
       @url = data['url']
       @currency = data['currency']['code']
       @country = data['country']['name']
-      @categories = data['categories'].map{|cat| Category.new(cat,data['url'])}  unless data['categories'].blank?    
+      @categories = data['categories'].map{|cat| Category.new(data['url'], cat)}  unless data['categories'].blank?    
     end  
     
     def self.find(id)
@@ -62,7 +62,7 @@ module BigCartel
 
   class Artist < Base  
     attr_reader :name, :url, :id, :permalink  
-    def initialize(data={}, store_url)
+    def initialize(store_url, data={})
       @name = data['name']
       @url = "#{store_url}#{data['url']}"
       @id = data['id']
@@ -91,7 +91,7 @@ module BigCartel
 
   class Page < Base
     attr_reader :name, :permalink, :url
-    def initialize(data={}, store_url)
+    def initialize(store_url, data={})
       @name = data['name']
       @permalink = data['permalink']    
       @url = "#{store_url}/#{data['permalink']}"
@@ -100,13 +100,13 @@ module BigCartel
   
   class Product < Base
     attr_reader :name, :permalink, :url, :description, :artists, :on_sale, :status, :categories, :price, :position, :url, :id, :tax, :images, :shipping
-    def initialize(data={}, store_url)
+    def initialize(store_url, data={})
       @name = data['name']
       @description = data['description']
-      @artists = data['artists'].map{|cat| Artist.new(cat,data['url'])}  unless data['artists'].blank?
+      @artists = data['artists'].map{|cat| Artist.new(data['url'], cat)}  unless data['artists'].blank?
       @on_sale= data['on_sale']
       @status = data['status']
-      @categories = data['categories'].map{|cat| Category.new(cat,data['url'])}  unless data['categories'].blank?
+      @categories = data['categories'].map{|cat| Category.new(data['url'], cat)}  unless data['categories'].blank?
       @price = data['price']
       @position = data['position']
       @url = "#{store_url}#{data['url']}"
@@ -122,7 +122,7 @@ module BigCartel
     end    
     
     def self.all(id, store_url)
-      self.fetch(id).map{|p| Product.new(p, store_url)} 
+      self.fetch(id).map{|p| Product.new(store_url, p)} 
     end  
       
     protected
