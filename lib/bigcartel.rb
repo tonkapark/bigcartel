@@ -114,7 +114,7 @@ module BigCartel
       @tax = data['tax']
       @permalink = data['permalink']  
       @images = data['images'].blank?  ? [] : data['images'].map{|img| Image.new(img)}  
-      @shipping = data['shipping']
+      @shipping = data['shipping'].map{|ship| Shipping.new(ship)}  unless data['shipping'].blank?
     end
     
     def img
@@ -139,5 +139,14 @@ module BigCartel
       @id = data['id']        
     end   
   end    
-
+  
+  class Shipping < Base
+    attr_reader :amount_alone, :amount_combined, :country
+    def initialize(data={})
+      @amount_alone = data['amount_alone']
+      @amount_combined = data['amount_with_others']        
+      @country = data['country']['code'] unless data['country'].blank?
+    end     
+  end
+  
 end
