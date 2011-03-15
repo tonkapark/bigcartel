@@ -99,7 +99,7 @@ module BigCartel
   end
   
   class Product < Base
-    attr_reader :name, :permalink, :url, :description, :artists, :on_sale, :status, :categories, :price, :position, :url, :id, :tax, :images, :shipping
+    attr_reader :name, :permalink, :url, :description, :artists, :on_sale, :status, :categories, :price, :position, :url, :id, :tax, :images, :shipping, :options
     def initialize(store_url, data={})
       @name = data['name']
       @description = data['description']
@@ -115,6 +115,7 @@ module BigCartel
       @permalink = data['permalink']  
       @images = data['images'].blank?  ? [] : data['images'].map{|img| Image.new(img)}  
       @shipping = data['shipping'].map{|ship| Shipping.new(ship)}  unless data['shipping'].blank?
+      @options = data['options'].map{|opt| ProductOption.new(opt)}  unless data['options'].blank?
     end
     
     def img
