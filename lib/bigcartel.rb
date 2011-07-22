@@ -30,7 +30,7 @@ module BigCartel
     
   class Store < Base
 
-    attr_reader :id, :description, :categories, :website, :products_count, :pages, :name, :url, :currency, :country
+    attr_reader :id, :description, :categories, :website, :products_count, :pages, :name, :url, :currency, :country, :artists
     
     def initialize(id, data={})
       @id = id
@@ -43,6 +43,7 @@ module BigCartel
       @currency = data['currency']['code']
       @country = data['country']['name']
       @categories = data['categories'].map{|cat| Category.new(data['url'], cat)}  unless data['categories'].blank?    
+      @artists = data['artists'].map{|cat| Artist.new(data['url'], cat)}  unless data['artists'].blank?
     end  
     
     def self.find(id)
@@ -99,7 +100,7 @@ module BigCartel
   end
   
   class Product < Base
-    attr_reader :name, :permalink, :url, :description, :artists, :on_sale, :status, :categories, :price, :position, :url, :id, :tax, :images, :shipping, :options
+    attr_reader :name, :permalink, :url, :description, :artists, :on_sale, :status, :categories, :price, :position, :url, :id, :tax, :images, :shipping, :options,:default_price
     def initialize(store_url, data={})
       @name = data['name']
       @description = data['description']
@@ -108,6 +109,7 @@ module BigCartel
       @status = data['status']
       @categories = data['categories'].map{|cat| Category.new(data['url'], cat)}  unless data['categories'].blank?
       @price = data['price']
+      @default_price = data['default_price']
       @position = data['position']
       @url = "#{store_url}#{data['url']}"
       @id = data['id']
@@ -134,10 +136,12 @@ module BigCartel
     
     
   class ProductOption < Base
-    attr_reader :name, :id
+    attr_reader :name, :id,:has_custom_price, :price
     def initialize(data={})
       @name = data['name']
       @id = data['id']        
+      @has_custom_price = data['has_custom_price']
+      @price = data['price']
     end   
   end    
   
