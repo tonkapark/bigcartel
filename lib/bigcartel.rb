@@ -30,29 +30,82 @@ module BigCartel
     
   class Store < Base
 
-    attr_reader :id, :description, :categories, :website, :products_count, :pages, :name, :url, :currency, :country, :artists
+    attr_reader :id, :description, :categories, :website, :products_count, :pages, :name, :url, :currency, :country, :artists, :currency_sign, :products
     
     def initialize(id, data={})
       @id = id
       @description = data['description']
       @website = data['website']
       @products_count = data['products_count']
-      @pages = data['pages'].map{|p| Page.new(data['url'], p)}  unless data['pages'].blank?
+      @pages = data['pages'].map{|p| Page.add(id, data['url'], p)}  unless data['pages'].blank?
       @name = data['name']
       @url = data['url']
       @currency = data['currency']['code']
+      @currency_sign = data['currency']['sign']
       @country = data['country']['name']
-      @categories = data['categories'].map{|cat| Category.new(data['url'], cat)}  unless data['categories'].blank?    
-      @artists = data['artists'].map{|cat| Artist.new(data['url'], cat)}  unless data['artists'].blank?
+      @categories = data['categories'].blank?  ? [] : data['categories'].map{|cat| Category.new(data['url'], cat)}
+      @artists = data['artists'].blank? ? [] : data['artists'].map{|cat| Artist.new(data['url'], cat)} 
+      @products = Product.all(@id, @url)
     end  
     
     def self.find(id)
       Store.new(id, self.fetch(id))    
     end  
     
-    def products
-      Product.all(@id, @url)
+    def product_find(permalink)
+      #self.products.select{|f| f["permalink"] == permalink}
+      @products.each do |p|
+        if p.permalink == permalink 
+          return p
+        end
+      end      
+    end    
+    
+    def page(permalink)
+      self.pages.each do |p|
+        return p if p.permalink == permalink
+      end
     end
+    
+    def category(permalink)
+      self.categories.each do |cat, idx|
+        return cat if cat.permalink == permalink
+      end
+    end    
+    
+    def artist(permalink)
+      self.artists.each do |a, idx|
+        return a if a.permalink == permalink
+      end
+    end      
+    
+    def products_by_category(cat)      
+      result = []
+      if self.categories.size > 0
+        self.products.each do |p|
+          cats = {}
+          if p.categories.size > 0 
+            cats = p.categories.collect {|c| c.permalink}          
+            result << p if cats.include?(cat)
+          end
+        end      
+      end
+      result
+    end    
+    
+    def products_by_artist(slug)      
+      result = []
+      if self.artists.size > 0
+        self.products.each do |p|
+          temp = {}
+          if p.artists.size > 0 
+            temp = p.artists.collect {|a| a.permalink}          
+            result << p if temp.include?(slug)
+          end
+        end      
+      end
+      result
+    end       
       
     protected
       def self.fetch(id)
@@ -91,38 +144,62 @@ module BigCartel
 
 
   class Page < Base
-    attr_reader :name, :permalink, :url
+    attr_reader :id, :name, :permalink, :url, :content, :category
     def initialize(store_url, data={})
+      @id = data['id']
       @name = data['name']
       @permalink = data['permalink']    
       @url = "#{store_url}/#{data['permalink']}"
+      @content = data['content']
+      @category = data['category']
     end
+    
+    def self.add(id, store_url, page)
+      Page.new(store_url, self.fetch(id, page['permalink']))
+    end
+    
+    protected
+      def self.fetch(id, page)
+        get("/#{id}/page/#{page}.js", :headers => {'Accept' => 'application/json'})
+      end      
   end
   
   class Product < Base
-    attr_reader :name, :permalink, :url, :description, :artists, :on_sale, :status, :categories, :price, :position, :url, :id, :tax, :images, :shipping, :options,:default_price
+    attr_reader :name, :permalink, :url, :full_url, :description, :artists, :on_sale, :status, :categories, :price, :position, :url, :id, :tax, :images, :shipping, :options,:default_price,:image, :image_count
     def initialize(store_url, data={})
       @name = data['name']
       @description = data['description']
-      @artists = data['artists'].map{|cat| Artist.new(data['url'], cat)}  unless data['artists'].blank?
+      @artists = data['artists'].blank? ? [] : data['artists'].map{|cat| Artist.new(data['url'], cat)}  
       @on_sale= data['on_sale']
       @status = data['status']
-      @categories = data['categories'].map{|cat| Category.new(data['url'], cat)}  unless data['categories'].blank?
+      @categories = data['categories'].blank? ? [] : data['categories'].map{|cat| Category.new(data['url'], cat)}
       @price = data['price']
       @default_price = data['default_price']
       @position = data['position']
-      @url = "#{store_url}#{data['url']}"
+      @full_url = "#{store_url}#{data['url']}"
+      @url = "#{data['url']}"
       @id = data['id']
       @tax = data['tax']
       @permalink = data['permalink']  
       @images = data['images'].blank?  ? [] : data['images'].map{|img| Image.new(img)}  
+      @image_count = data['images'].blank? ? 0 : data['images'].size
       @shipping = data['shipping'].map{|ship| Shipping.new(ship)}  unless data['shipping'].blank?
       @options = data['options'].map{|opt| ProductOption.new(opt)}  unless data['options'].blank?
+      @image = Image.new(data['images'][0]) unless data['images'].blank?      
+    end
+        
+    def has_default_option
+      names = {}
+      if self.options.size <= 1
+        names = self.options.collect {|x| x.name }        
+      end      
+      return names.include?("Default")
     end
     
-    def img
-      self.images.first
-    end    
+    def option
+      self.options.first
+    end
+    
     
     def self.all(id, store_url)
       self.fetch(id).map{|p| Product.new(store_url, p)} 
