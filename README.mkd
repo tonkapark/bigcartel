@@ -12,14 +12,19 @@ Usage
     require 'bigcartel'
     require 'pp'
 
-    s = BigCartel.store("tonkapark") 
-    
+    s = BigCartel.store("tonkapark")     
+
     pp s.description
     
     s.products.each do |product|
      pp product.name
-     pp product.img.thumb
+     pp product.image.thumb
     end
+    
+    
+    s = BigCartel.store("ugmonk")  
+    #return products by category
+    products = s.products_by_category("prints")
     
     
     
