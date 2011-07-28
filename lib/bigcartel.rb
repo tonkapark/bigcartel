@@ -131,7 +131,7 @@ module BigCartel
   class Image < Base
     attr_reader :height, :width, :url, :thumb, :medium, :large
     def initialize(data={})
-      url_parts = data['url'].scan(/(http:\/\/cache(0|1).bigcartel.com\/product_images\/\d*\/)(.*).(jpg|png|gif)/i)
+      url_parts = data['url'].scan(/(http:\/\/cache(0|1).bigcartel.com\/product_images\/\d*\/)(.*).(jpg|png|gif|jpeg)/i)
       
       @height = data['height']
       @width = data['width']    
