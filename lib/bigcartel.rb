@@ -1,4 +1,5 @@
 require 'httparty'
+require 'uri'
 
 module BigCartel
     
@@ -155,12 +156,13 @@ module BigCartel
     end
     
     def self.add(id, store_url, page)
-      Page.new(store_url, self.fetch(id, page['permalink']))
+      page_permalink = page['permalink']
+      Page.new(store_url, self.fetch(id, page_permalink))
     end
     
     protected
       def self.fetch(id, page)
-        get("/#{id}/page/#{page}.js", :headers => {'Accept' => 'application/json'})
+        get(URI.encode("/#{id}/page/#{page}.js"), :headers => {'Accept' => 'application/json'})
       end      
   end
   
