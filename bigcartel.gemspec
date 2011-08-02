@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Matt Anderson"]
   s.email       = ["matt@tonkapark.com"]
-  s.homepage    = ""
+  s.homepage    = "http://tonkapark.com"
   s.summary     = %q{Ruby wrapper for the Big Cartel API}
   s.description = %q{A Ruby wrapper for the Big Cartel External REST API}
 
