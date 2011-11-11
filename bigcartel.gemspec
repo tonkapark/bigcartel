@@ -12,8 +12,13 @@ Gem::Specification.new do |s|
   s.summary     = %q{Ruby wrapper for the Big Cartel API}
   s.description = %q{A Ruby wrapper for the Big Cartel External REST API}
 
-  s.add_development_dependency 'rspec', '~> 2.3'
-  s.add_runtime_dependency('httparty', '~> 0.7.3')
+  
+  s.add_runtime_dependency('httparty', '~> 0.8.1')
+  s.add_runtime_dependency('hashie', '~> 1.2.0')
+  
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'webmock'
+  
 
   s.rubyforge_project = s.name
 

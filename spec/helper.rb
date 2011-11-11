@@ -1,15 +1,13 @@
-$:.unshift(File.expand_path('../../lib', __FILE__))
-
+require File.expand_path('../../lib/bigcartel', __FILE__)
 require 'rubygems'
-require 'bundler'
+require 'rspec'
+require 'webmock/rspec'
 
-Bundler.require(:default, :development)
 
-require 'bigcartel'
+def fixture_path
+  File.expand_path("../fixtures", __FILE__)
+end
 
-Rspec.configure do |config|
-
-  config.before(:each) do
-
-  end
+def fixture(file)
+  File.new(fixture_path + '/' + file)
 end
