@@ -1,26 +1,52 @@
 require 'helper'
 
+describe BigCartel do
+  before do
+    
+    stub_request(:get, "api.bigcartel.com/park/store.js").
+      to_return(:body=>fixture("store.json"), :headers => {:content_type => "application/json; charset=utf-8"})
+      
+    stub_request(:get, /api.bigcartel.com\/park\/products.js/).      
+      to_return(:body=>fixture("products.json"), :headers => {:content_type => "application/json; charset=utf-8"})        
+
+     stub_request(:get, /api.bigcartel.com\/park\/page\/\w+.js/).
+      to_return(:body=>fixture("page.json"), :headers => {:content_type => "application/json; charset=utf-8"})
+  end  
+    
+    it "will delegate BigCartel.new to client " do
+      client = BigCartel.new("park")
+      client.should be_an_instance_of BigCartel::Client   
+    end    
+  
+end
+
+
 describe BigCartel::Client do
+  
+  before do
+    
+    stub_request(:get, "api.bigcartel.com/park/store.js").
+      to_return(:body=>fixture("store.json"), :headers => {:content_type => "application/json; charset=utf-8"})
+      
+    stub_request(:get, /api.bigcartel.com\/park\/products.js/).      
+      to_return(:body=>fixture("products.json"), :headers => {:content_type => "application/json; charset=utf-8"})        
+
+     stub_request(:get, /api.bigcartel.com\/park\/page\/\w+.js/).
+      to_return(:body=>fixture("page.json"), :headers => {:content_type => "application/json; charset=utf-8"})
+ end  
+  
   
   #base client features
   describe "client" do
-    before do
-      stub_request(:get, "api.bigcartel.com/park/store.js").
-        to_return(:body=>fixture("store.json"), :headers => {:content_type => "application/json; charset=utf-8"})
-        
-      stub_request(:get, /api.bigcartel.com\/park\/products.js\?limit=\d+/).
-        to_return(:body=>fixture("products.json"), :headers => {:content_type => "application/json; charset=utf-8"})        
-    end
       
     before(:each) do
       @client = BigCartel::Client.new("park")
-    end
-    
+    end    
       
-    it "BigCartel::Client.new is proper class" do           
+    it "is properly classed" do           
       @client.should be_an_instance_of BigCartel::Client 
     end 
-      
+    
     it "can fetch" do
       store = BigCartel::Client.fetch("/park/store.js")
       a_request(:get, "api.bigcartel.com/park/store.js").
@@ -38,13 +64,7 @@ describe BigCartel::Client do
   #store features
   describe ".store" do
     before do
-      @client = BigCartel::Client.new("park")
-      
-      stub_request(:get, "api.bigcartel.com/park/store.js").
-        to_return(:body=>fixture("store.json"), :headers => {:content_type => "application/json; charset=utf-8"})
-        
-      stub_request(:get, /api.bigcartel.com\/park\/products.js\?limit=\d+/).
-        to_return(:body=>fixture("products.json"), :headers => {:content_type => "application/json; charset=utf-8"})        
+      @client = BigCartel::Client.new("park")      
     end
     
     it "will make http api calls" do
@@ -85,13 +105,6 @@ describe BigCartel::Client do
   describe ".products" do
     before do
       @client = BigCartel::Client.new("park")
-      
-      stub_request(:get, "api.bigcartel.com/park/store.js").
-        to_return(:body=>fixture("store.json"), :headers => {:content_type => "application/json; charset=utf-8"})
-        
-      stub_request(:get, /api.bigcartel.com\/park\/products.js\?limit=\d+/).      
-        to_return(:body=>fixture("products.json"), :headers => {:content_type => "application/json; charset=utf-8"})        
-
     end
       
     it "will make http api calls" do
@@ -149,15 +162,6 @@ describe BigCartel::Client do
   describe ".page" do
     before do
       @client = BigCartel::Client.new("park")
-      
-      stub_request(:get, "api.bigcartel.com/park/store.js").
-        to_return(:body=>fixture("store.json"), :headers => {:content_type => "application/json; charset=utf-8"})
-        
-      stub_request(:get, /api.bigcartel.com\/park\/products.js/).      
-        to_return(:body=>fixture("products.json"), :headers => {:content_type => "application/json; charset=utf-8"})        
-
-       stub_request(:get, "api.bigcartel.com/park/page/about.js").
-        to_return(:body=>fixture("page.json"), :headers => {:content_type => "application/json; charset=utf-8"})
    end
 
    it "will make http api calls" do     
@@ -188,6 +192,9 @@ describe BigCartel::Client do
     end    
     
   end
+  
+  
+
   
   
 end

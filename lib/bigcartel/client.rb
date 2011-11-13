@@ -12,7 +12,7 @@ module BigCartel
 	
     attr_reader :account, :store, :url
     
-    def initialize(account)
+    def initialize(account=nil)
       @account = account
       @url = "http://#{account}.bigcartel.com"
     end
@@ -31,8 +31,8 @@ module BigCartel
     end	
 	
 
-    def store
-      self.class.fetch("/#{@account}/store.js")              
+    def store(account=@account)
+      self.class.fetch("/#{account}/store.js")              
     end
     
 
