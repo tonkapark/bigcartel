@@ -10,38 +10,33 @@ module BigCartel
     headers 'Content-Type' => 'application/json' 
 
 	
-    attr_reader :account, :store, :url
-    
-    def initialize(account=nil)
-      @account = account
-      @url = "http://#{account}.bigcartel.com"
-    end
-	
-	
     def self.fetch(path)
       response = get(path)     
       Hashie::Mash.new(response)  
     end
     
     def self.list(path, opts={})
-      limit = opts[:limit] || 100      
+      opts = { :limit => 100 }.merge opts   
       
-      response = get(path, :query =>  {'limit' => limit})           
+      response = get(path, :query =>  {'limit' => opts[:limit]})           
       response.map { |c| Hashie::Mash.new(c)}
     end	
 	
 
-    def store(account=@account)
-      self.class.fetch("/#{account}/store.js")              
+    def store(account, opts={})
+      opts = { :show_products => true, :product_limit => 100 }.merge opts
+      
+      store = self.class.fetch("/#{account}/store.js")             
+      store.products = opts[:show_products] ?  products(account,{:limit => opts[:product_limit]}) : {}
+      store   
     end
     
 
-    def products(opts={})
-      products = self.class.list("/#{@account}/products.js", opts)
+    def products(account, opts={})
+      products = self.class.list("/#{account}/products.js", opts)
 
       products.each do |p|
         p.images = images_helper(p.images)
-        p.full_url = "#{@account}#{p.url}"
         p.has_default_option = has_default_option?(p.options)
         p.option = p.options.first
       end
@@ -50,16 +45,13 @@ module BigCartel
     end
 
     
-    def page(permalink=nil)
-      self.class.fetch(URI.encode("/#{@account}/page/#{permalink}.js"))
+    def page(account, permalink=nil)
+      self.class.fetch(URI.encode("/#{account}/page/#{permalink}.js"))
     end  
       
     ##############################################
     ## HELPERS
   private
-      def store_url(account)
-        "http://#{account}.bigcartel.com"
-      end
       
       def has_default_option?(options)
         names = {}

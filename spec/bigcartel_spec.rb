@@ -16,8 +16,8 @@ describe BigCartel do
     it "will delegate BigCartel.new to client " do
       client = BigCartel.new("park")
       client.should be_an_instance_of BigCartel::Client   
-    end    
-  
+    end      
+
 end
 
 
@@ -40,7 +40,7 @@ describe BigCartel::Client do
   describe "client" do
       
     before(:each) do
-      @client = BigCartel::Client.new("park")
+      @client = BigCartel::Client.new
     end    
       
     it "is properly classed" do           
@@ -64,20 +64,38 @@ describe BigCartel::Client do
   #store features
   describe ".store" do
     before do
-      @client = BigCartel::Client.new("park")      
+      @client = BigCartel::Client.new   
     end
     
-    it "will make http api calls" do
-      store = @client.store
+    it "with no options makes 1 http call" do
+      store = @client.store("park")
       a_request(:get, "api.bigcartel.com/park/store.js").
             should have_been_made   
             
       a_request(:get, /api.bigcartel.com\/park\/products.js/).
+            should have_been_made          
+    end    
+
+    it "with show_products makes 2 http call" do
+      store = @client.store("park", {:show_products => true, :product_limit => 2})
+      a_request(:get, "api.bigcartel.com/park/store.js").
+            should have_been_made   
+            
+      a_request(:get, "api.bigcartel.com/park/products.js?limit=2").
+            should have_been_made          
+    end   
+
+    it "with show_products false makes 1 http call" do
+      store = @client.store("park", {:show_products => false, :product_limit => 2})
+      a_request(:get, "api.bigcartel.com/park/store.js").
+            should have_been_made   
+            
+      a_request(:get, "api.bigcartel.com/park/products.js?limit=2").
             should_not have_been_made          
-    end     
+    end 
   
     context "will be a valid hash" do
-      before{@store = @client.store}
+      before{@store = @client.store("park")}
       
       it {@store.should be_a Hash}
       
@@ -95,7 +113,9 @@ describe BigCartel::Client do
       it { @store.country.should be_an Hash  }
       it { @store.currency.should be_an Hash  }
       it { @store.pages.should be_an Array  }            
+      it { @store.products.should be_a Array  }           
     end
+    
   end
   
   
@@ -104,11 +124,11 @@ describe BigCartel::Client do
   
   describe ".products" do
     before do
-      @client = BigCartel::Client.new("park")
+      @client = BigCartel::Client.new
     end
       
     it "will make http api calls" do
-      products = @client.products
+      products = @client.products("park")
       a_request(:get, "api.bigcartel.com/park/store.js").
             should_not have_been_made   
             
@@ -117,14 +137,19 @@ describe BigCartel::Client do
     end     
 
     it "accepts limit parameter" do
-      products = @client.products({:limit => 10}  )
+      products = @client.products("park", {:limit => 10}  )
             
       a_request(:get, "api.bigcartel.com/park/products.js?limit=10").
-            should have_been_made          
+            should have_been_made                     
     end    
+          
+    it "limited" do
+      products = @client.products("park", {:limit => 2} )
+      products.count.should eq 2
+    end              
       
     context "will be a valid hash" do
-      before{@product = @client.products.first}
+      before{@product = @client.products("park").first}
       
       it {@product.should be_a Hash}
       
@@ -161,11 +186,11 @@ describe BigCartel::Client do
 ##################
   describe ".page" do
     before do
-      @client = BigCartel::Client.new("park")
+      @client = BigCartel::Client.new
    end
 
    it "will make http api calls" do     
-     page = @client.page("about")
+     page = @client.page("park", "about")
      a_request(:get, "api.bigcartel.com/park/page/about.js").
             should have_been_made
             
@@ -177,7 +202,7 @@ describe BigCartel::Client do
    end   
           
     describe 'should build hash' do
-      before(:each) { @page = @client.page("about")}
+      before(:each) { @page = @client.page("park", "about")}
       
       it "should have a permalink" do                
         @page.permalink.should be_a String

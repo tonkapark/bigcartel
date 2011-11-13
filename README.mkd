@@ -12,19 +12,27 @@ Usage
     require 'bigcartel'
     require 'pp'
 
-    s = BigCartel.store("tonkapark")     
 
-    pp s.description
+    client = BigCartel::Client.new
     
-    s.products.each do |product|
+    client.store("tonkapark", {:show_products => true, :product_limit => 2})
+    
+    client.products("tonkapark", {:limit => 100})
+    
+    client.page("tonkapark", "page-permalink")
+    
+    
+    store = BigCartel.store("tonkapark")     
+
+    pp store.description
+    
+    store.products.each do |product|
      pp product.name
      pp product.image.thumb
     end
     
     
-    s = BigCartel.store("ugmonk")  
-    #return products by category
-    products = s.products_by_category("prints")
+    
     
 
 What you can do with the gem
