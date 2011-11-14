@@ -29,6 +29,7 @@ module BigCartel
       opts = { :show_products => true, :product_limit => 100 }.merge opts
       
       store = self.class.fetch("/#{account}/store.js")             
+      store.account = account
       store.products = opts[:show_products] ?  products(account,{:limit => opts[:product_limit]}) : {}
       store   
     end

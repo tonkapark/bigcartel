@@ -103,7 +103,12 @@ describe BigCartel::Client do
         @store.url.should be_an String
         @store.url.should eq("http://park.bigcartel.com")
       end  
-        
+
+      it "should have an account label" do        
+        @store.account.should be_an String
+        @store.account.should eq("park")
+      end  
+
       it { @store.categories.should be_an Array  }
       it { @store.artists.should be_an Array  }
       it { @store.website.should be_a String  }
