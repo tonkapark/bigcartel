@@ -9,6 +9,8 @@ module BigCartel
     base_uri "http://api.bigcartel.com"
     headers 'Content-Type' => 'application/json' 
 
+	def initialize(options={})
+	end
 	
     def self.fetch(path)
       response = get(path)     
@@ -16,7 +18,7 @@ module BigCartel
     end
     
     def self.list(path, opts={})
-      opts = { :limit => 100 }.merge opts   
+#      opts = { :limit => 100 }.merge opts   
       
       response = get(path, :query =>  {'limit' => opts[:limit]})           
       response.map { |c| Hashie::Mash.new(c)}
@@ -33,6 +35,7 @@ module BigCartel
     
 
     def products(account, opts={})
+      opts = { :limit => 100 }.merge opts   
       products = self.class.list("/#{account}/products.js", opts)
 
       products.each do |p|

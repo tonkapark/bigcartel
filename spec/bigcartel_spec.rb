@@ -14,7 +14,7 @@ describe BigCartel do
   end  
     
     it "will delegate BigCartel.new to client " do
-      client = BigCartel.new("park")
+      client = BigCartel.new
       client.should be_an_instance_of BigCartel::Client   
     end      
 
@@ -28,8 +28,8 @@ describe BigCartel::Client do
     stub_request(:get, "api.bigcartel.com/park/store.js").
       to_return(:body=>fixture("store.json"), :headers => {:content_type => "application/json; charset=utf-8"})
       
-    stub_request(:get, /api.bigcartel.com\/park\/products.js/).      
-      to_return(:body=>fixture("products.json"), :headers => {:content_type => "application/json; charset=utf-8"})        
+    stub_request(:get, /api.bigcartel.com\/park\/products.js\?limit=\d+/).      
+      to_return(:body=>fixture("products.json"), :headers => {:content_type => "application/json; charset=utf-8"})  
 
      stub_request(:get, /api.bigcartel.com\/park\/page\/\w+.js/).
       to_return(:body=>fixture("page.json"), :headers => {:content_type => "application/json; charset=utf-8"})
@@ -142,11 +142,6 @@ describe BigCartel::Client do
       a_request(:get, "api.bigcartel.com/park/products.js?limit=10").
             should have_been_made                     
     end    
-          
-    it "limited" do
-      products = @client.products("park", {:limit => 2} )
-      products.count.should eq 2
-    end              
       
     context "will be a valid hash" do
       before{@product = @client.products("park").first}
