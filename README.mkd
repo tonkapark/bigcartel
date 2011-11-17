@@ -4,6 +4,12 @@ A Ruby wrapper for the Big Cartel External REST API.
 
 [![Build Status](https://secure.travis-ci.org/tonkapark/bigcartel.png)](http://travis-ci.org/tonkapark/bigcartel)
 
+Version 1.0
+-----------
+
+With the release of 1.0 I changed some of the design of the gem and should be considered a breaking change if you were using the 0.* versions of the gem. I hope this new design of the gem will be faster and also more useful in your applications.
+
+
 Installation
 ------------
     gem install bigcartel
@@ -11,7 +17,7 @@ Installation
 Usage
 ------
     require 'rubygems'
-    require 'bigcartel'
+    require 'bigcartel', '>~ 1.0.0'
     require 'pp'
 
 
@@ -36,13 +42,30 @@ Usage
     
     
     
-
 What you can do with the gem
 ---------
 
 As part of the [Big Cartel Themes and Templates](http://themes.tonkapark.com) available from Tonka Park there was a small web app built using the BigCartel gem to generate google products xml and also create a theme preview.
 
 See the gem in action at http://carteltools.heroku.com
+
+
+Supported Rubies
+----------------
+ * 1.8.7
+ * 1.9.2
+
+
+Change Log
+==========
+
+1.0.0 - November 17, 2011
+--------------
+* redesigned wrapper from the ground up
+* added rspec tests 
+* support for ruby 1.9.2 and 1.8.7
+
+
 
 Copyright
 ---------
