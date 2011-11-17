@@ -2,6 +2,8 @@ The Big Cartel Ruby Gem
 ====================
 A Ruby wrapper for the Big Cartel External REST API.
 
+[![Build Status](https://secure.travis-ci.org/tonkapark/bigcartel.png)](http://travis-ci.org/tonkapark/bigcartel)
+
 Installation
 ------------
     gem install bigcartel
