@@ -40,7 +40,7 @@ module BigCartel
       products = self.class.list("/#{account}/products.js", opts)
 
       products.each do |p|
-        p.images = images_helper(p.images)
+        p.images = images_helper(p.images) if p.has_key?("images")
         p.has_default_option = has_default_option?(p.options)
         p.option = p.options.first
       end
