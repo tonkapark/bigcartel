@@ -4,7 +4,7 @@ A Ruby wrapper for the Big Cartel External REST API.
 
 [![Build Status](https://secure.travis-ci.org/tonkapark/bigcartel.png)](http://travis-ci.org/tonkapark/bigcartel)
 
-Version 1.0
+Version 1.0.2
 -----------
 
 With the release of 1.0 I changed some of the design of the gem and should be considered a breaking change if you were using the 0.* versions of the gem. I hope this new design of the gem will be faster and also more useful in your applications.
@@ -58,6 +58,9 @@ Supported Rubies
 
 Change Log
 ==========
+1.0.1 - January 12, 2003
+--------------
+* fixed bug in regexp that broke images call when Big Cartel changed url for their images.
 
 1.0.0 - November 17, 2011
 --------------
