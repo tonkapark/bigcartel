@@ -58,7 +58,7 @@ Supported Rubies
 
 Change Log
 ==========
-1.0.3 - January 12, 2003
+1.0.4 - January 12, 2003
 --------------
 * fixed bug in regexp that broke images call when Big Cartel changed url for their images.
 
