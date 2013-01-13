@@ -68,11 +68,11 @@ module BigCartel
     def images_helper(images)
       output = Array.new
       images.each do |img|
-      url_parts = img.url.scan(/(http:\/\/.*.bigcartel.com\/product_images\/\d*\/)(.*).(jpg|png|gif|jpeg)/i)
+      url_parts = img.url.scan(/(https?:\/\/.*\/product_images)(.*).(jpg|png|gif|jpeg)/i)
         
-          img.thumb = "#{url_parts[0][0]}75.#{url_parts[0][3]}"
-          img.medium = "#{url_parts[0][0]}175.#{url_parts[0][3]}"
-          img.large = "#{url_parts[0][0]}300.#{url_parts[0][3]}"
+          img.thumb = "#{url_parts[0][0]}75.#{url_parts[0][2]}"
+          img.medium = "#{url_parts[0][0]}175.#{url_parts[0][2]}"
+          img.large = "#{url_parts[0][0]}300.#{url_parts[0][2]}"
       end
       images
     end    
