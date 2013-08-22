@@ -6,31 +6,50 @@ module BigCartel
   class Client
     
     include HTTParty
+    debug_output
     base_uri "http://api.bigcartel.com"
     headers 'Content-Type' => 'application/json' 
 
-	def initialize(options={})
-	end
+  	def initialize(options={})
+  	  @@maintenance_mode = false
+  	end
+  	
+  	def maintenance_mode
+  	  @@maintenance_mode
+	  end
 	
     def self.fetch(path)
-      response = get(path)     
-      Hashie::Mash.new(response)  
+      response = get(path)  
+      if response.code == 403
+        @@maintenance_mode = true 
+        response.merge!({maintenance_mode: true})
+      end
+      Hashie::Mash.new(response)
     end
     
     def self.list(path, opts={})
-#      opts = { :limit => 100 }.merge opts   
       
-      response = get(path, :query =>  {'limit' => opts[:limit]})           
-      response.map { |c| Hashie::Mash.new(c)}
+      response = get(path, :query =>  {'limit' => opts[:limit]})        
+      case response.code
+        when 403          
+          @@maintenance_mode = true
+          Hashie::Mash.new(response.merge!({maintenance_mode: true}))
+        else
+          response.map { |c| Hashie::Mash.new(c)}
+      end      
+      
     end	
 	
 
     def store(account, opts={})
       opts = { :show_products => true, :product_limit => 100 }.merge opts
       
-      store = self.class.fetch("/#{account}/store.js")             
+      store = self.class.fetch("/#{account}/store.js")     
       store.account = account
-      store.products = opts[:show_products] ?  products(account,{:limit => opts[:product_limit]}) : {}
+      store.maintenance_mode = @@maintenance_mode
+      unless @@maintenance_mode
+        store.products = opts[:show_products] ?  products(account,{:limit => opts[:product_limit]}) : {}
+      end
       store   
     end
     
@@ -39,10 +58,12 @@ module BigCartel
       opts = { :limit => 100 }.merge opts   
       products = self.class.list("/#{account}/products.js", opts)
 
-      products.each do |p|
-        p.images = images_helper(p.images) if p.has_key?("images")
-        p.has_default_option = has_default_option?(p.options)
-        p.option = p.options.first
+      unless @@maintenance_mode
+        products.each do |p|
+          p.images = images_helper(p.images) if p.has_key?("images")
+          p.has_default_option = has_default_option?(p.options)
+          p.option = p.options.first
+        end
       end
       
       products	 

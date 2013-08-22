@@ -33,6 +33,12 @@ describe BigCartel::Client do
 
      stub_request(:get, /api.bigcartel.com\/park\/page\/\w+.js/).
       to_return(:body=>fixture("page.json"), :headers => {:content_type => "application/json; charset=utf-8"})
+      
+    stub_request(:get, "api.bigcartel.com/maintenance/store.js").
+      to_return(:body=>fixture("maintenance.json"), :headers => {:content_type => "application/json; charset=utf-8"}, :status => 403)      
+      
+    stub_request(:get, /api.bigcartel.com\/maintenance\/products.js\?limit=\d+/).
+      to_return(:body=>fixture("maintenance.json"), :headers => {:content_type => "application/json; charset=utf-8"}, :status => 403)      
  end  
   
   
@@ -66,6 +72,18 @@ describe BigCartel::Client do
     before do
       @client = BigCartel::Client.new   
     end
+    
+    it "in maintenance mode" do
+      store = @client.store("maintenance")
+      a_request(:get, "api.bigcartel.com/maintenance/store.js").
+            should have_been_made      
+            
+        a_request(:get, "api.bigcartel.com/maintenance/products.js").
+              should_not have_been_made
+
+      expect(store.account).to eq("maintenance")
+      expect(store.maintenance_mode).to be_true
+    end          
     
     it "with no options makes 1 http call" do
       store = @client.store("park")
@@ -179,7 +197,21 @@ describe BigCartel::Client do
       it { @product.id.should be_an Integer }      
       it { @product.options.should be_an Array }     
          
-    end      
+    end    
+    
+    context "in maintenance mode" do
+
+      it 'should return no products' do
+        products = @client.products("maintenance")
+        a_request(:get, "api.bigcartel.com/maintenance/store.js").
+              should_not have_been_made      
+            
+          a_request(:get, "api.bigcartel.com/maintenance/products.js?limit=100").
+                should have_been_made
+
+        expect(products.maintenance_mode).to be_true
+      end
+    end  
       
   end
   
